@@ -3,6 +3,7 @@
 import { getTodos } from '../api/todos';
 import type { Todo } from '@/types/TodoItem';
 import TodoList from '@/components/TodoList.vue';
+import FooterMenu from '@/components/FooterMenu.vue';
 
   const todoList = ref<Todo[]>([]);
  
@@ -11,7 +12,6 @@ import TodoList from '@/components/TodoList.vue';
     getTodos()
       .then(response => {
         todoList.value = [...response];
-        console.log(todoList.value);
       })
       .catch(error => {
         console.log(error);
@@ -41,12 +41,7 @@ import TodoList from '@/components/TodoList.vue';
                 <TodoList :todos="todoList" />
               </section>
 
-              <FooterMenu
-                handleFilterTodos={handleFilterTodos}
-                handleClearCompleted={handleClearCompleted}
-                status={status}
-                todosList={todosList}
-              />
+              <FooterMenu :todos="todoList" />
             </div>
          
         </div>

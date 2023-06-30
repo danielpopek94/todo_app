@@ -1,44 +1,46 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
-import { getTodos } from '../api/todos';
-import type { Todo } from '@/types/TodoItem';
-import TodoList from '@/components/TodoList.vue';
+import { TodoStatus } from '@/types/TodoStatus';
+import { computed, defineProps } from 'vue';
 
+const props = defineProps(['todos']);
 
+const completed = computed(() => {
+  return props.todos.filter(todo => todo.completed).length;
+});
+
+const itemsLeft = computed(() => {
+  return props.todos.length - completed.value;
+});
+
+const status = 'all';
 
 </script>
 
 <template>
-  <footer className="todoapp__footer">
-      <span className="todo-count">
-        {`${itemsLeft} items left`}
+  <footer class="todoapp__footer">
+      <span class="todo-count">
+       {{itemsLeft}} items left
       </span>
 
-      <nav className="filter">
+      <nav class="filter">
         <a
           href="#/"
-          className={`filter__link ${status === TodoStatus.ALL ? 'selected' : ''}`}
-          onClick={() => handleFilterTodos(TodoStatus.ALL)}
+          :class="{'filter__link': true, 'selected': status === TodoStatus.ALL}"
         >
           All
         </a>
 
         <a
           href="#/active"
-          className={`filter__link ${status === TodoStatus.ACTIVE ? 'selected' : ''}`}
-          onClick={
-            () => handleFilterTodos(TodoStatus.ACTIVE)
-          }
+          :class="{'filter__link': true, 'selected': status === TodoStatus.ACTIVE}"
+
         >
           Active
         </a>
 
         <a
           href="#/completed"
-          className={`filter__link ${status === TodoStatus.COMPLETED ? 'selected' : ''}`}
-          onClick={
-            () => handleFilterTodos(TodoStatus.COMPLETED)
-          }
+          :class="{'filter__link': true, 'selected': status === TodoStatus.COMPLETED}"
         >
           Completed
         </a>
@@ -46,9 +48,7 @@ import TodoList from '@/components/TodoList.vue';
 
       <button
         type="button"
-        className="todoapp__clear-completed"
-        onClick={() => handleClearCompleted()}
-        disabled={itemsCompleted === 0}
+        class="todoapp__clear-completed"
       >
         Clear completed
       </button>

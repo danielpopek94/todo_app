@@ -1,12 +1,11 @@
 <script setup lang="ts">
-	const completed = true;
 	const isLoading = true;
 
 	defineProps(['todo']);
 </script>
 
 <template>
-	<div :class="{'todo': true, 'completed': completed}" key={id}>
+	<div :class="{'todo': true, 'completed': todo.completed}">
       <label class="todo__status-label">
         <input
           type="checkbox"
