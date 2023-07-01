@@ -5,15 +5,19 @@ import type { Todo } from '@/types/TodoItem';
 import TodoList from '@/components/TodoList.vue';
 import FooterMenu from '@/components/FooterMenu.vue';
 import NewTodoInputField from '@/components/NewTodoInputField.vue';
+import { TodoStatus } from '@/types/TodoStatus';
 
   const todosList = ref<Todo[]>([]);
+  const visibleTodos = ref<Todo[]>([]);
   const tempTodo = ref<Todo>();
+  const status = ref<TodoStatus>();
  
 
   const handleLoadTodos = () => {
     getTodos()
       .then(response => {
         todosList.value = [...response];
+        visibleTodos.value = [...todosList.value];
       })
       .catch(error => {
         console.log(error);
@@ -45,6 +49,23 @@ import NewTodoInputField from '@/components/NewTodoInputField.vue';
     }
   };
 
+  const handleFilterTodos = (newStatus: TodoStatus) => {
+    status.value = newStatus;
+
+    switch (newStatus) {
+      case TodoStatus.COMPLETED:
+        visibleTodos.value = todosList.value.filter(todo => todo.completed);
+        break;
+      case TodoStatus.ACTIVE:
+      visibleTodos.value = todosList.value.filter(todo => !todo.completed);
+        break;
+      default:
+      visibleTodos.value = [...todosList.value];
+    }
+  };
+
+
+
   handleLoadTodos();
 
 </script>
@@ -63,10 +84,13 @@ import NewTodoInputField from '@/components/NewTodoInputField.vue';
           />
             <div v-if="true">
               <section className="todoapp__main">
-                <TodoList :todos="todosList" />
+                <TodoList :todos="visibleTodos" />
               </section>
 
-              <FooterMenu :todos="todosList" />
+              <FooterMenu 
+              :todos="todosList"
+              @handleFilterTodos="handleFilterTodos"
+               />
             </div>
          
         </div>

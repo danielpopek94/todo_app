@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { TodoStatus } from '@/types/TodoStatus';
-import { computed, defineProps } from 'vue';
+import { computed, defineProps, ref } from 'vue';
 
 const props = defineProps(['todos']);
+const emit = defineEmits(['handleFilterTodos']);
+const status = ref<TodoStatus>(TodoStatus.ALL);
 
 const completed = computed(() => {
   return props.todos.filter(todo => todo.completed).length;
@@ -12,7 +14,10 @@ const itemsLeft = computed(() => {
   return props.todos.length - completed.value;
 });
 
-const status = 'all';
+const handleFilterTodos = (selectedStatus: TodoStatus) => {
+  status.value = selectedStatus;
+  emit('handleFilterTodos', selectedStatus);
+};
 
 </script>
 
@@ -26,6 +31,7 @@ const status = 'all';
         <a
           href="#/"
           :class="{'filter__link': true, 'selected': status === TodoStatus.ALL}"
+          @click="handleFilterTodos(TodoStatus.ALL)"
         >
           All
         </a>
@@ -33,7 +39,7 @@ const status = 'all';
         <a
           href="#/active"
           :class="{'filter__link': true, 'selected': status === TodoStatus.ACTIVE}"
-
+          @click="handleFilterTodos(TodoStatus.ACTIVE)"
         >
           Active
         </a>
@@ -41,7 +47,8 @@ const status = 'all';
         <a
           href="#/completed"
           :class="{'filter__link': true, 'selected': status === TodoStatus.COMPLETED}"
-        >
+          @click="handleFilterTodos(TodoStatus.COMPLETED)"
+          >
           Completed
         </a>
       </nav>
