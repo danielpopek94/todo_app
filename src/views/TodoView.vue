@@ -1,16 +1,16 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
-import { addTodo, getTodos } from '../api/todos';
-import type { Todo } from '@/types/TodoItem';
-import TodoList from '@/components/TodoList.vue';
-import FooterMenu from '@/components/FooterMenu.vue';
-import NewTodoInputField from '@/components/NewTodoInputField.vue';
-import { TodoStatus } from '@/types/TodoStatus';
+  import { ref, watch } from 'vue';
+  import { addTodo, deleteTodos, getTodos } from '../api/todos';
+  import type { Todo } from '@/types/TodoItem';
+  import TodoList from '@/components/TodoList.vue';
+  import FooterMenu from '@/components/FooterMenu.vue';
+  import NewTodoInputField from '@/components/NewTodoInputField.vue';
+  import { TodoStatus } from '@/types/TodoStatus';
 
   const todosList = ref<Todo[]>([]);
   const visibleTodos = ref<Todo[]>([]);
   const tempTodo = ref<Todo>();
-  const status = ref<TodoStatus>();
+  const status = ref<TodoStatus>(TodoStatus.ALL);
  
 
   const handleLoadTodos = () => {
@@ -27,9 +27,6 @@ import { TodoStatus } from '@/types/TodoStatus';
   const handleAddNewTodo = (
     title: string,
   ) => {
-    // event.preventDefault();
-    console.log('funct start');
-
     if (title.trim() !== '') {
       tempTodo.value = {
         id: 0,
@@ -64,6 +61,22 @@ import { TodoStatus } from '@/types/TodoStatus';
     }
   };
 
+  const handleDeleteTodo = (ids: number[]) => {
+    deleteTodos(ids)
+      .then(() => {
+        todosList.value = todosList.value.filter(todo => !ids.includes(todo.id));
+      })
+      // .catch(() => setErrorType(Errors.DELETE));
+  };
+
+  watch(
+    () => todosList.value,
+    (newValue) => {
+      visibleTodos.value = [...newValue];
+    },
+    { deep: true }
+  );
+
 
 
   handleLoadTodos();
@@ -84,23 +97,26 @@ import { TodoStatus } from '@/types/TodoStatus';
           />
             <div v-if="true">
               <section className="todoapp__main">
-                <TodoList :todos="visibleTodos" />
+                <TodoList 
+                  :todos="visibleTodos" 
+                  @handleDeleteTodo="handleDeleteTodo"
+                />
               </section>
 
               <FooterMenu 
-              :todos="todosList"
-              @handleFilterTodos="handleFilterTodos"
+                :todos="todosList"
+                @handleFilterTodos="handleFilterTodos"
                />
             </div>
          
         </div>
-        {
+        <!-- {
           errorType
           && <ErrorMessage
             handleSetError={setErrorType}
             errorType={errorType}
           />
-        }
+        } -->
       </div>
     </div>
 </template>

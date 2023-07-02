@@ -2,6 +2,10 @@ iframe {
   display: none;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 .notification {
   transition-property: opacity, min-height;
   transition-duration: 1s;
